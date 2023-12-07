@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
       'kd_akses' => 'alin08',
       'is_admin' => 1,
       'added_kd_akses' => 0,
-      'password' => bcrypt('user_password')
+      'password' => bcrypt('rahasia')
     ]);
     User::create([
       'nama' => 'Suganda',
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
       'kd_akses' => 'suga08',
       'is_admin' => 0,
       'added_kd_akses' => 0,
-      'password' => bcrypt('user_password')
+      'password' => bcrypt('rahasia')
     ]);
 
     MasterJabatan::create([

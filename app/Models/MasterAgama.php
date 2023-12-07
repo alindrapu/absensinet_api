@@ -15,4 +15,8 @@ class MasterAgama extends Model
     'kd_agama',
     'nm_agama'
   ];
+
+  public function pegawaiCurrent() {
+    return $this->hasMany(PegawaiCurrent::class, 'kd_jabatan', 'kd_jabatan');
+  }
 }

@@ -53,8 +53,6 @@ class AuthController extends Controller
   {
     $user = User::where('kd_akses', $request->kd_akses)->first();
 
-
-
     if (Hash::check($request->password, $user->password)) {
       $token = $user->createToken('authToken')->plainTextToken;
       $response = ['status' => 'success', 'token' => $token, 'user' => $user, 'message' => 'Berhasil login'];
@@ -66,6 +64,45 @@ class AuthController extends Controller
     }
     $response = ['status' => 'error', 'message' => 'Server Error'];
     return response()->json($response, 500);
+  }
+
+  public function newKdPass(Request $request)
+  {
+    $response = [];
+    try {
+      $update = User::where('email', $request->email)
+        ->update([
+          'password' => bcrypt($request->password),
+          'kd_akses' => $request->kd_akses,
+          'added_kd_akses' => 1
+        ]);
+
+      if ($update) {
+        $user = User::where('email', $request->email)->first();
+        $user->save();
+
+        $response = [
+          'status' => 'success',
+          'message' => 'Password berhasil diubah',
+          'data' => $user
+        ];
+      } else {
+        $response = [
+          'status' => 'error',
+          'message' => 'Password gagal diubah',
+          'error' => 'Update failed'
+        ];
+      }
+
+      return response()->json($response, 200);
+    } catch (\Throwable $th) {
+      $response = [
+        'status' => 'error',
+        'message' => 'Password gagal diubah',
+        'error' => $th->getMessage()
+      ];
+      return response()->json($response, 400);
+    }
   }
 
   public function logout(Request $request)

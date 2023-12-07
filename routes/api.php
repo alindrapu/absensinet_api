@@ -21,8 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/user-details', [AuthController::class, 'userDetails'])->middleware('auth:sanctum');
 Route::post('/register', [AuthController::class, 'register'])->middleware('auth:sanctum');
 Route::post('/login', [AuthController::class, 'login']);
+Route::put('/new-kd-password', [AuthController::class, 'newKdPass'])->middleware('auth:sanctum');
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/list-jabatan', [MasterJabatanController::class, 'getJabatan']);
 Route::get('/list-agama', [MasterAgamaController::class, 'getAgama']);
