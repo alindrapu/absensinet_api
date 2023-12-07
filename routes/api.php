@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MasterAgamaController;
 use App\Http\Controllers\MasterJabatanController;
+use App\Http\Controllers\PegawaiCurrentController;
+use App\Models\PegawaiCurrent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +30,5 @@ Route::put('/new-kd-password', [AuthController::class, 'newKdPass'])->middleware
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/list-jabatan', [MasterJabatanController::class, 'getJabatan']);
 Route::get('/list-agama', [MasterAgamaController::class, 'getAgama']);
+Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent'])->middleware('auth:sanctum');
 

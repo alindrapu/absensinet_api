@@ -15,4 +15,8 @@ class MasterJabatan extends Model
       'kd_jabatan',
       'nm_jabatan'
     ];
+
+    public function pegawaiCurrent() {
+        return $this->hasMany(PegawaiCurrent::class, 'kd_jabatan', 'kd_jabatan');
+      }
 }

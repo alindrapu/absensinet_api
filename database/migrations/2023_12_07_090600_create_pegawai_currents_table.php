@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pegawai_currents', function (Blueprint $table) {
             $table->id();
-            $table->int('user_id')->unique(); // from users
+            $table->unsignedBigInteger('user_id')->unique(); // from users
             $table->string('kd_akses')->nullable()->unique(); // from users
             $table->string('nama');
             $table->string('email')->unique();
@@ -22,13 +22,13 @@ return new class extends Migration
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
             $table->text('alamat');
-            $table->integer('is_admin'); // from users
+            $table->integer('is_admin');
             $table->integer('kd_agama'); // from master_agamas
-            $table->integer('kd_jabatan'); // from master_jabatans
+            $table->string('kd_jabatan'); // from master_jabatans
             $table->integer('sts_kepeg');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->unsigned()->cascadeOnDelete();
             $table->foreign('kd_akses')->references('kd_akses')->on('users');
             $table->foreign('kd_agama')->references('kd_agama')->on('master_agamas');
             $table->foreign('kd_jabatan')->references('kd_jabatan')->on('master_jabatans');
