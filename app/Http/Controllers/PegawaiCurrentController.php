@@ -20,6 +20,7 @@ class PegawaiCurrentController extends Controller
                 "telp" => $request->telp,
                 "tempat_lahir" => $request->tempat_lahir,
                 "tanggal_lahir" => $request->tanggal_lahir,
+                "jenis_kelamin" => $request->jenis_kelamin,
                 "alamat" => $request->alamat,
                 "is_admin" => $request->is_admin,
                 "kd_agama" => $request->kd_agama,

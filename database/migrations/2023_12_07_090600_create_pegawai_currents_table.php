@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('telp');
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
+            $table->string('jenis_kelamin');
             $table->text('alamat');
             $table->integer('is_admin');
             $table->integer('kd_agama'); // from master_agamas
@@ -29,7 +30,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->unsigned()->cascadeOnDelete();
-            $table->foreign('kd_akses')->references('kd_akses')->on('users');
             $table->foreign('kd_agama')->references('kd_agama')->on('master_agamas');
             $table->foreign('kd_jabatan')->references('kd_jabatan')->on('master_jabatans');
         });

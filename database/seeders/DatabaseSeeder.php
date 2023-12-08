@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\MasterAgama;
 use App\Models\MasterJabatan;
+use App\Models\PegawaiCurrent;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -104,6 +105,23 @@ class DatabaseSeeder extends Seeder
     MasterAgama::create([
       'kd_agama' => 07,
       'nm_agama' => 'Hindu'
+    ]);
+
+    PegawaiCurrent::create([
+      "user_id" => 1,
+      "kd_akses" => "alin08",
+      "nama" => "Alindra Putra",
+      "email" => "alindrapu@gmail.com",
+      "nik" => "3275051809970006",
+      "telp" => "081944008008",
+      "tempat_lahir" => "Jakarta",
+      "tanggal_lahir" => "1997-09-08",
+      "jenis_kelamin" => "Pria",
+      "alamat" => "Jakarta",
+      "is_admin" => 1,
+      "kd_agama" => 1,
+      "kd_jabatan" => "001",
+      "sts_kepeg" => 1
     ]);
   }
 }

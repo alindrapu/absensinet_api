@@ -112,4 +112,9 @@ return [
 
     'password_timeout' => 10800,
 
+    'personal_access_tokens' => [
+        'expires' => true,
+        'expires_at' => null,
+    ],
+
 ];
