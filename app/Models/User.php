@@ -47,4 +47,9 @@ class User extends Authenticatable
     public function pegawaiCurrent(): HasOne {
        return $this->hasOne(PegawaiCurrent::class, 'user_id', 'id');
     }
+
+    public function pegawaiCurrentPosition() : HasOne{
+        return $this->hasOne(PegawaiCurrentPosition::class, 'user_id', 'id');
+
+    }
 }

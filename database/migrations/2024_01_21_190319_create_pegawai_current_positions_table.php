@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('pegawai_current_positions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->unique(); // from users
+            $table->string('kd_akses')->unique();
+            $table->string('latitude');
+            $table->string('longitude');
             $table->timestamps();
+
+
+            $table->foreign('user_id')->references('id')->on('users')->unsigned()->cascadeOnDelete();
         });
     }
 
