@@ -5,6 +5,7 @@ use App\Http\Controllers\MasterAgamaController;
 use App\Http\Controllers\MasterJabatanController;
 use App\Http\Controllers\PegawaiCurrentController;
 use App\Http\Controllers\PegawaiCurrentPositionController;
+use App\Http\Controllers\PresensiController;
 use App\Models\PegawaiCurrent;
 use App\Models\PegawaiCurrentPosition;
 use Illuminate\Http\Request;
@@ -29,14 +30,15 @@ Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 // User routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user-details', [AuthController::class, 'userDetails']);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+  Route::get('/user-details', [AuthController::class, 'userDetails']);
+  Route::get('/user', function (Request $request) {
+    return $request->user();
+  });
 
-    // Other authenticated routes
-    Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent']);
-    Route::post('/update-current-position', [PegawaiCurrentPositionController::class, 'updateCurrentPosition']);
+  // Other authenticated routes
+  Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent']);
+  Route::post('/update-current-position', [PegawaiCurrentPositionController::class, 'updateCurrentPosition']);
+  Route::post('/presensi-pegawai', [PresensiController::class, 'presensiPegawai']);
 });
 
 // Other non-authenticated routes
