@@ -60,32 +60,71 @@ class PresensiController extends Controller
     } elseif (!empty($q_check) || $q_check != '') {
       // lakukan absen keluar
       try {
-        DB::update(
-          'UPDATE presensis
-          SET latitude_keluar = ?,
-          longitude_keluar = ?,
-          jam_keluar = ?,
-          status_lokasi_keluar = ?,
-          updated_at = ?
-          WHERE user_id = ?
-          AND tanggal_presensi = ?',
-          [
-            $request->latitude,
-            $request->longitude,
-            Carbon::now()->toTimeString(),
-            $request->status_lokasi_keluar,
-            Carbon::now(),
-            $user_id,
-            $request->tanggal_presensi
-          ]
-        );
+        // DB::update(
+        //   'UPDATE presensis
+        //   SET latitude_keluar = ?,
+        //   longitude_keluar = ?,
+        //   jam_keluar = ?,
+        //   status_lokasi_keluar = ?,
+        //   updated_at = ?
+        //   WHERE user_id = ?
+        //   AND tanggal_presensi = ?',
+        //   [
+        //     $request->latitude,
+        //     $request->longitude,
+        //     Carbon::now()->toTimeString(),
+        //     $request->status_lokasi_keluar,
+        //     Carbon::now(),
+        //     $user_id,
+        //     $request->tanggal_presensi
+        //   ]
+        // );
 
-        $response = ['status' => 'Berhasil absen keluar', "check" => $q_check, "time check" => Carbon::now(), 'today' => $td];
+        // To echo the generated SQL query, you can use the toSql() method before executing the update:
+        $query = DB::table('presensis')
+          ->where('user_id', $user_id)
+          ->where('tanggal_presensi', $today)
+          ->update([
+            'latitude_keluar' => $request->latitude,
+            'longitude_keluar' => $request->longitude,
+            'jam_keluar' => Carbon::now()->toTimeString(),
+            'status_lokasi_keluar' => $request->status_lokasi_keluar,
+            'updated_at' => Carbon::now(),
+          ]);
+
+
+        $response = [
+          'query' => $query,
+          'status' => 'Berhasil absen keluar',
+          'time_check' => Carbon::now(),
+          'today' => $today
+        ];
         return response()->json($response, 200);
       } catch (QueryException $e) {
         $response = ['error' => "Gagal melakukan absen keluar, coba lagi", "message" => $e];
         return response()->json($response, 422);
       }
     }
+  }
+
+  public function checkPresensi(Request $request)
+  {
+    $response = [];
+    $td = Carbon::today();
+    $today = $td->toDateString();
+    $user_id = DB::table('users')->where('kd_akses', $request->kd_akses)->pluck('id')->first();
+
+    $q_check = DB::select("select tanggal_presensi from presensis where kd_akses = '" . $request->kd_akses . "' and tanggal_presensi = '$today'");
+
+    $check_presensi = DB::select("SELECT jam_masuk, jam_keluar from presensis where user_id = '$user_id' and tanggal_presensi = '$today' and kd_akses = '$request->kd_akses'");
+
+    $response = ["message" => $check_presensi, "Status" => "Success"];
+
+    return response()->json($response, 200);
+
+    // if (empty($q_check) || $q_check == '') {
+
+    // } else {
+    // }
   }
 }

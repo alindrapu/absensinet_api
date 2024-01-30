@@ -37,6 +37,14 @@ class DatabaseSeeder extends Seeder
     //     'added_kd_akses' => 0,
     //     'password' => bcrypt('rahasia')
     // ]);
+    User::create([
+        'nama' => 'Nicko Marsellino',
+        'email' => 'Nicko@gmail.com',
+        'kd_akses' => 'nick08',
+        'is_admin' => 0,
+        'added_kd_akses' => 0,
+        'password' => bcrypt('rahasia')
+    ]);
 
 
     // MasterJabatan::create([
@@ -126,29 +134,29 @@ class DatabaseSeeder extends Seeder
     //     "sts_kepeg" => 1
     // ]);
 
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 1,
-      'nm_jenis_presensi' => 'WFO'
-    ]);
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 2,
-      'nm_jenis_presensi' => 'WFA'
-    ]);
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 3,
-      'nm_jenis_presensi' => 'Perjalanan Dinas'
-    ]);
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 4,
-      'nm_jenis_presensi' => 'Cuti'
-    ]);
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 5,
-      'nm_jenis_presensi' => 'Sakit'
-    ]);
-    JenisPresensi::create([
-      'kd_jenis_presensi' => 6,
-      'nm_jenis_presensi' => 'Izin'
-    ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 1,
+    //   'nm_jenis_presensi' => 'WFO'
+    // ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 2,
+    //   'nm_jenis_presensi' => 'WFA'
+    // ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 3,
+    //   'nm_jenis_presensi' => 'Perjalanan Dinas'
+    // ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 4,
+    //   'nm_jenis_presensi' => 'Cuti'
+    // ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 5,
+    //   'nm_jenis_presensi' => 'Sakit'
+    // ]);
+    // JenisPresensi::create([
+    //   'kd_jenis_presensi' => 6,
+    //   'nm_jenis_presensi' => 'Izin'
+    // ]);
   }
 }

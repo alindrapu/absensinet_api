@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent']);
   Route::post('/update-current-position', [PegawaiCurrentPositionController::class, 'updateCurrentPosition']);
   Route::post('/presensi-pegawai', [PresensiController::class, 'presensiPegawai']);
+  Route::post('/check-presensi', [PresensiController::class, 'checkPresensi']);
 });
 
 // Other non-authenticated routes
