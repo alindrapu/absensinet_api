@@ -36,8 +36,9 @@ class PresensiController extends Controller
             jam_masuk,
             status_lokasi_masuk,
             kd_jenis_presensi,
+            alasan,
             created_at,
-            updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
             $user_id,
             $request->kd_akses,
@@ -47,6 +48,7 @@ class PresensiController extends Controller
             Carbon::now()->toTimeString(),
             $request->status_lokasi_masuk,
             $request->kd_jenis_absensi,
+            $request->alasan,
             Carbon::now(),
             Carbon::now()
           ]
@@ -121,10 +123,5 @@ class PresensiController extends Controller
     $response = ["message" => $check_presensi, "Status" => "Success"];
 
     return response()->json($response, 200);
-
-    // if (empty($q_check) || $q_check == '') {
-
-    // } else {
-    // }
   }
 }
