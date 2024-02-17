@@ -124,4 +124,11 @@ class PresensiController extends Controller
 
     return response()->json($response, 200);
   }
+
+  public function last5Days (Request $request){
+    $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan from presensis where kd_akses = '$request->kd_akses' order by tanggal_presensi desc limit 5");
+
+    $response = ["message" => "Berhasil", "data" => $q_check];
+    return response()->json($response, 200);
+  }
 }

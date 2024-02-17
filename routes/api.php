@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/update-current-position', [PegawaiCurrentPositionController::class, 'updateCurrentPosition']);
   Route::post('/presensi-pegawai', [PresensiController::class, 'presensiPegawai']);
   Route::post('/check-presensi', [PresensiController::class, 'checkPresensi']);
+  Route::post('/last-v-days', [PresensiController::class, 'last5Days']);
 });
 
 // Other non-authenticated routes
