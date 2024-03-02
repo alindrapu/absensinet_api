@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Presensi;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -81,8 +82,6 @@ class PresensiController extends Controller
         //     $request->tanggal_presensi
         //   ]
         // );
-
-        // To echo the generated SQL query, you can use the toSql() method before executing the update:
         $query = DB::table('presensis')
           ->where('user_id', $user_id)
           ->where('tanggal_presensi', $today)
@@ -125,10 +124,34 @@ class PresensiController extends Controller
     return response()->json($response, 200);
   }
 
-  public function last5Days (Request $request){
+  public function last5Days(Request $request)
+  {
     $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan from presensis where kd_akses = '$request->kd_akses' order by tanggal_presensi desc limit 5");
 
     $response = ["message" => "Berhasil", "data" => $q_check];
     return response()->json($response, 200);
+  }
+
+  public function allHistory(Request $request)
+  {
+    $validated = $request->validate([
+      "kd_akses" => "required",
+      "hist_month" => "integer",
+      "hist_year" => "integer"
+    ]);
+
+    $response = "";
+    $cond_month = !empty($validated['hist_month']) ? "and month(tanggal_presensi) = ".$validated['hist_month']."" : "";
+    $cond_year = !empty($validated['hist_year']) ? "and year(tanggal_presensi) = ".$validated['hist_year']."" : "";
+
+    try {
+      $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan from presensis where kd_akses = '" . $validated['kd_akses'] . "' $cond_month $cond_year order by tanggal_presensi desc");
+
+      $response = ["message" => "Berhasil mengambil data", "data" => $q_check];
+      return response()->json($response, 200);
+    } catch (QueryException $e) {
+      $response = ['error' => "Gagal mengambil data, coba lagi", "error" => $e];
+      return response()->json($response, 422);
+    }
   }
 }

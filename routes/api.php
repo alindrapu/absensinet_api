@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/presensi-pegawai', [PresensiController::class, 'presensiPegawai']);
   Route::post('/check-presensi', [PresensiController::class, 'checkPresensi']);
   Route::post('/last-v-days', [PresensiController::class, 'last5Days']);
+  Route::post('/histories', [PresensiController::class, 'allHistory']);
 });
 
 // Other non-authenticated routes
