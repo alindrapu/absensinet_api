@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/check-presensi', [PresensiController::class, 'checkPresensi']);
   Route::post('/last-v-days', [PresensiController::class, 'last5Days']);
   Route::post('/histories', [PresensiController::class, 'allHistory']);
+  Route::get('/presensi/export_excel', [PresensiController::class, 'export_excel']);
 });
 
 // Other non-authenticated routes

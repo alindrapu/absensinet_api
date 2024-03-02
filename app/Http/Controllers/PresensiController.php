@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PresensisExport;
 use App\Models\Presensi;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PresensiController extends Controller
 {
@@ -141,8 +143,8 @@ class PresensiController extends Controller
     ]);
 
     $response = "";
-    $cond_month = !empty($validated['hist_month']) ? "and month(tanggal_presensi) = ".$validated['hist_month']."" : "";
-    $cond_year = !empty($validated['hist_year']) ? "and year(tanggal_presensi) = ".$validated['hist_year']."" : "";
+    $cond_month = !empty($validated['hist_month']) ? "and month(tanggal_presensi) = " . $validated['hist_month'] . "" : "";
+    $cond_year = !empty($validated['hist_year']) ? "and year(tanggal_presensi) = " . $validated['hist_year'] . "" : "";
 
     try {
       $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan from presensis where kd_akses = '" . $validated['kd_akses'] . "' $cond_month $cond_year order by tanggal_presensi desc");
@@ -153,5 +155,12 @@ class PresensiController extends Controller
       $response = ['error' => "Gagal mengambil data, coba lagi", "error" => $e];
       return response()->json($response, 422);
     }
+  }
+
+  public function export_excel()
+  {
+    // return Excel::download(new PresensisExport, 'riwayat_presensi.xlsx', \Maatwebsite\Excel\Excel::XLSX, ['Content-Type' => 'text/csv',]);
+
+    return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
   }
 }
