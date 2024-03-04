@@ -158,13 +158,16 @@ class PresensiController extends Controller
     }
   }
 
-  public function export_excel()
+  public function export_excel(Request $request)
   {
+    $validated = $request->validate([
+      "kd_akses" => "required",
+    ]);
     // return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
     try {
       $now = Carbon::now()->format("Y_m_d_H_i_s");
       $filename = str_replace(" ", "_", "q_{$now}.xlsx");
-      Presensi::query()->where('kd_akses', 'alin10')->storeExcel($filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
+      Presensi::query()->where('kd_akses', $validated['kd_akses'])->storeExcel($filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
       $response = ["message" => "Berhasil generate excel", "link" => "link", "filename" => $filename];
       return response()->json($response, 200);
     } catch (\Throwable $th) {

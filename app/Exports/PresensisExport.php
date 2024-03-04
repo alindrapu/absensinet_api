@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Presensi;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class PresensisExport implements FromCollection
@@ -12,6 +13,7 @@ class PresensisExport implements FromCollection
     */
     public function collection()
     {
-        return Presensi::all();
+      $result = DB::select("select kd_akses, tanggal_presensi from presensis");
+      return $result;
     }
 }
