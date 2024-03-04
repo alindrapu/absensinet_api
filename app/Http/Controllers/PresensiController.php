@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\PresensisExport;
 use App\Models\Presensi;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -159,8 +160,18 @@ class PresensiController extends Controller
 
   public function export_excel()
   {
-    // return Excel::download(new PresensisExport, 'riwayat_presensi.xlsx', \Maatwebsite\Excel\Excel::XLSX, ['Content-Type' => 'text/csv',]);
+    // return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
+    try {
+      $now = Carbon::now()->format("Y_m_d_H_i_s");
+      $filename = str_replace(" ", "_", "q_{$now}.xlsx");
+      Presensi::query()->where('kd_akses', 'alin10')->storeExcel($filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
+      $response = ["message" => "Berhasil generate excel", "link" => "link", "filename" => $filename];
+      return response()->json($response, 200);
+    } catch (\Throwable $th) {
+      $response = ["message" => "Gagal generate excel", "error" => $th];
+      return response()->json($response, 500);
+    }
 
-    return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
   }
+
 }
