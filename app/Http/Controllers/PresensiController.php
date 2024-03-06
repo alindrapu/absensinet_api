@@ -166,7 +166,7 @@ class PresensiController extends Controller
     // return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
     try {
       $now = Carbon::now()->format("Y_m_d_H_i_s");
-      $filename = str_replace(" ", "_", "q_{$now}.xlsx");
+      $filename = str_replace(" ", "_", "q_".$now.".xlsx");
       Presensi::query()->where('kd_akses', $validated['kd_akses'])->storeExcel($filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
       $response = ["message" => "Berhasil generate excel", "link" => "link", "filename" => $filename];
       return response()->json($response, 200);
