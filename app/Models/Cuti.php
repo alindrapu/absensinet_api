@@ -12,6 +12,10 @@ class Cuti extends Model
 
   protected $table = "cutis";
 
+  protected $guarded = [
+    "id",
+  ];
+
   public function user(): BelongsTo
   {
     return $this->belongsTo(User::class, 'kd_akses', 'kd_akses');
