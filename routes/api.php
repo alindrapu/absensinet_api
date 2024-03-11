@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CutiController;
 use App\Http\Controllers\MasterAgamaController;
 use App\Http\Controllers\MasterJabatanController;
 use App\Http\Controllers\PegawaiCurrentController;
@@ -48,3 +49,4 @@ Route::middleware('auth:sanctum')->group(function () {
 // Other non-authenticated routes
 Route::get('/list-jabatan', [MasterJabatanController::class, 'getJabatan']);
 Route::get('/list-agama', [MasterAgamaController::class, 'getAgama']);
+Route::get('/list-jenis-cuti', [CutiController::class, 'getJenisCuti']);
