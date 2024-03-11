@@ -15,7 +15,7 @@ class JenisCuti extends Seeder
   {
     ModelJenisCuti::create([
       "kd_jenis_cuti" => 1,
-      "nm_jenis_cuti" => "Cuti"
+      "nm_jenis_cuti" => "Cuti Tahunan"
     ]);
 
     ModelJenisCuti::create([
@@ -35,6 +35,16 @@ class JenisCuti extends Seeder
 
     ModelJenisCuti::create([
       "kd_jenis_cuti" => 5,
+      "nm_jenis_cuti" => "Cuti Menikah"
+    ]);
+
+    ModelJenisCuti::create([
+      "kd_jenis_cuti" => 6,
+      "nm_jenis_cuti" => "Cuti Meninggal"
+    ]);
+
+    ModelJenisCuti::create([
+      "kd_jenis_cuti" => 7,
       "nm_jenis_cuti" => "Izin"
     ]);
 
