@@ -14,6 +14,21 @@ class Cuti extends Model
 
   public function user(): BelongsTo
   {
-    return $this->belongsTo(User::class, 'user_id', 'id');
+    return $this->belongsTo(User::class, 'kd_akses', 'kd_akses');
+  }
+
+  public function jabatan(): BelongsTo
+  {
+    return $this->belongsTo(MasterJabatan::class, 'kd_jabatan', 'kd_jabatan');
+  }
+
+  public function jenis_cuti(): BelongsTo
+  {
+    return $this->belongsTo(JenisCuti::class, 'kd_jenis_cuti', 'kd_jenis_cuti');
+  }
+
+  public function status_permohonan(): BelongsTo
+  {
+    return $this->belongsTo(MasterStatusPermohonanCuti::class, 'kd_status_permohonan', 'kd_status_permohonan');
   }
 }
