@@ -22,7 +22,7 @@ return new class extends Migration
       $table->date('tanggal_mulai');
       $table->date('tanggal_selesai');
       $table->date('tanggal_buat');
-      $table->date('tanggal_ubah');
+      $table->date('tanggal_ubah')->nullable();
       $table->integer('kd_status_permohonan'); // from master_status_permohonan_cutis
       $table->date('tanggal_approve_atasan_1')->nullable();
       $table->date('tanggal_approve_atasan_2')->nullable();
