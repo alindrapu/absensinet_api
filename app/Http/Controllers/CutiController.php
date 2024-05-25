@@ -47,10 +47,11 @@ class CutiController extends Controller
       ->first();
     $kd_jabatan = $data_pegawai->kd_jabatan;
     $nama = $data_pegawai->nama;
-    $kd_jenis_cuti = DB::table('jenis_cutis')->where('nm_jenis_cuti', $nm_jenis_cuti)->select('kd_jenis_cuti')->first();
+    $kd_jenis_cuti = DB::table('jenis_cutis')->where('nm_jenis_cuti', $nm_jenis_cuti)->value('kd_jenis_cuti');
 
     // Cek tidak bisa mengajukan untuk tanggal yang sama
-    $q_check = Cuti::where('kd_akses', $kd_akses)
+    try{
+      $q_check = Cuti::where('kd_akses', $kd_akses)
       ->where(function ($query) use ($tanggal_mulai, $tanggal_selesai) {
         $query->where(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
           $q->where('tanggal_mulai', '<=', $tanggal_mulai)
@@ -66,10 +67,13 @@ class CutiController extends Controller
           });
       })
       ->first();
-
-    if ($q_check) {
-      $response = ["status" => "Error", "message" => "Sudah ada pengajuan cuti di tanggal yang sama"];
-      return response()->json($response, 500);
+    } catch (QueryException $e){
+      $response = ["status" => "Error", "message" => $e];
+    } finally {
+      if ($q_check) {
+        $response = ["status" => "Error", "message" => "Sudah ada pengajuan cuti di tanggal yang sama"];
+        return response()->json($response, 500);
+      }
     }
 
     $kd_status_permohonan = ($kd_jabatan == '002' ? 3 : 2);
