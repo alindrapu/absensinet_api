@@ -22,6 +22,7 @@ class AuthController extends Controller
         $validated = $request->validate([
           'nama' => 'required|max:55',
           'email' => 'email|required|unique:users',
+          'nik' => 'required|string|max:16',
           'password' => 'required',
           'kd_akses' => 'required|max:6|unique:users|regex:/^[a-zA-Z0-9]+$/',
           'is_admin' => 'required',
@@ -39,49 +40,46 @@ class AuthController extends Controller
           'updated_at' => now(),
         ]);
 
-
         $tanggalLahir = date('Y-m-d', strtotime($request->tanggal_lahir));
         $kd_agama = DB::table('master_agamas')->where('nm_agama', $request->nm_agama)->pluck('kd_agama')->first();
         $kd_jabatan = DB::table('master_jabatans')->where('nm_jabatan', $request->nm_jabatan)->pluck('kd_jabatan')->first();
         $user_id = DB::table('users')->where('email', $request->email)->pluck('id')->first();
 
-        try {
-          $dataCurrent = [
-            "user_id" => $user_id,
-            "kd_akses" => $request->kd_akses,
-            "nama" => $request->nama,
-            "email" => $request->email,
-            "nik" => $request->nik,
-            "telp" => $request->telp,
-            "tempat_lahir" => $request->tempat_lahir,
-            "tanggal_lahir" => $tanggalLahir,
-            "jenis_kelamin" => $request->jenis_kelamin,
-            "alamat" => $request->alamat,
-            "is_admin" => $request->is_admin,
-            "kd_agama" => $kd_agama,
-            "kd_jabatan" => $kd_jabatan,
-            "sts_kepeg" => ($request->sts_kepeg == 'Aktif' ? 1 : 0)
-          ];
+        $dataCurrent = [
+          "user_id" => $user_id,
+          'kd_akses' => $validated['kd_akses'],
+          'nama' => $validated['nama'],
+          'email' => $validated['email'],
+          "nik" => $validated['nik'],
+          "telp" => $request->telp,
+          "tempat_lahir" => $request->tempat_lahir,
+          "tanggal_lahir" => $tanggalLahir,
+          "jenis_kelamin" => $request->jenis_kelamin,
+          "alamat" => $request->alamat,
+          "is_admin" => $request->is_admin,
+          "kd_agama" => $kd_agama,
+          "kd_jabatan" => $kd_jabatan,
+          "sts_kepeg" => ($request->sts_kepeg == 'Aktif' ? 1 : 0),
+          "jatah_cuti_tahunan" => 12,
+          "jatah_cuti_kematian" => 3,
+          "jatah_cuti_menikah" => 3,
+          "jatah_cuti_melahirkan" => 3
+        ];
 
-          PegawaiCurrent::create($dataCurrent);
+        PegawaiCurrent::create($dataCurrent);
 
-          $response = ['status' => 'Berhasil menambahkan pegawai', 'value' => $dataCurrent];
-
-          return response()->json($response, 200);
-        } catch (QueryException $e) {
-          $response = ['status' => 'Gagal menambahkan pegawai', 'pesan' => $e->getMessage(), 'value' => $dataCurrent];
-          return response()->json($response, 500);
-        }
-
-        $response = ['status' => 'success', 'message' => 'Pendaftaran akun telah berhasil!', 'user_data' => $user, 'pegawai_current' => $dataCurrent];
-
-        return $response;
+        $response = ['status' => 'Berhasil menambahkan pegawai', 'value' => $dataCurrent];
       });
       DB::commit();
       return response()->json($response, 200);
+    } catch (QueryException $e) {
+      $response = ['status' => 'Gagal menambahkan pegawai', 'pesan' => $e->getMessage()];
+      return response()->json($response, 500);
     } catch (\Throwable $th) {
+      return response()->json("error: $th", 500);
     }
   }
+
 
   public function login(Request $request)
   {

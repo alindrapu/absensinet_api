@@ -25,7 +25,7 @@ class CutiController extends Controller
   {
     $validated = $request->validate([
       "kd_akses" => "required",
-      "alasan_cuti" => "required",
+      "alasan_cuti" => "required|string",
       "nm_jenis_cuti" => "required|string",
       "tanggal_mulai" => "required|date",
       "tanggal_selesai" => "required|date",
@@ -50,24 +50,24 @@ class CutiController extends Controller
     $kd_jenis_cuti = DB::table('jenis_cutis')->where('nm_jenis_cuti', $nm_jenis_cuti)->value('kd_jenis_cuti');
 
     // Cek tidak bisa mengajukan untuk tanggal yang sama
-    try{
+    try {
       $q_check = Cuti::where('kd_akses', $kd_akses)
-      ->where(function ($query) use ($tanggal_mulai, $tanggal_selesai) {
-        $query->where(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
-          $q->where('tanggal_mulai', '<=', $tanggal_mulai)
-            ->where('tanggal_selesai', '>=', $tanggal_mulai);
-        })
-          ->orWhere(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
-            $q->where('tanggal_mulai', '<=', $tanggal_selesai)
-              ->where('tanggal_selesai', '>=', $tanggal_selesai);
+        ->where(function ($query) use ($tanggal_mulai, $tanggal_selesai) {
+          $query->where(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
+            $q->where('tanggal_mulai', '<=', $tanggal_mulai)
+              ->where('tanggal_selesai', '>=', $tanggal_mulai);
           })
-          ->orWhere(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
-            $q->where('tanggal_mulai', '>=', $tanggal_mulai)
-              ->where('tanggal_selesai', '<=', $tanggal_selesai);
-          });
-      })
-      ->first();
-    } catch (QueryException $e){
+            ->orWhere(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
+              $q->where('tanggal_mulai', '<=', $tanggal_selesai)
+                ->where('tanggal_selesai', '>=', $tanggal_selesai);
+            })
+            ->orWhere(function ($q) use ($tanggal_mulai, $tanggal_selesai) {
+              $q->where('tanggal_mulai', '>=', $tanggal_mulai)
+                ->where('tanggal_selesai', '<=', $tanggal_selesai);
+            });
+        })
+        ->first();
+    } catch (QueryException $e) {
       $response = ["status" => "Error", "message" => $e];
     } finally {
       if ($q_check) {
