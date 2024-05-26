@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/presensi/export_excel', [PresensiController::class, 'export_excel']);
   Route::post('/request-cuti', [CutiController::class, 'requestCuti']);
   Route::post('/update-cuti', [CutiController::class, 'approvalCuti']);
+  Route::get('/get-list-permohonan-cuti', [CutiController::class, 'getListPermohonanCuti']);
 });
 
 // Other non-authenticated routes

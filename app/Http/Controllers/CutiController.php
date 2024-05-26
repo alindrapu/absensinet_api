@@ -7,9 +7,15 @@ use App\Models\JenisCuti;
 use App\Models\MasterStatusPermohonanCuti;
 use App\Models\PegawaiCurrent;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+// todo:
+// 1. create get list apporal cuti, binding ke user login
+// 2. create approval/reject cuti
+// 3. create detail cuti
 
 class CutiController extends Controller
 {
@@ -155,6 +161,33 @@ class CutiController extends Controller
       DB::rollBack();
 
       return response()->json($response, 422);
+    }
+  }
+
+  public function getListPermohonanCuti(Request $request)
+  {
+    $validated = $request->validate([
+      "kd_akses" => 'required'
+    ]);
+
+    // Cek jabatan user
+    $jabatan = DB::table('pegawai_currents')->where('kd_akses', $validated['kd_akses'])->value('kd_jabatan');
+    
+    if ($jabatan == "001") { // Kepala Desa
+      $kd_status_permohonan = 3;
+    } else if ($jabatan == "002") { // Sekretaris
+      $kd_status_permohonan = 2;
+    } else {
+      return response()->json("Anda tidak memiliki hak akses approval!", 422);
+    }
+
+    try {
+      $query = DB::table('cutis')->where('kd_status_permohonan', $kd_status_permohonan)->select('kd_akses', 'nama', 'alasan_cuti', 'kd_jabatan', 'kd_jenis_cuti', 'lama_cuti', 'tanggal_mulai', 'tanggal_selesai')->get();
+      $response = ["Status" => "Success", "message" => "Berhasil mengambil data permohonan cuti", "data" => $query];
+      return response()->json($response, 200);
+    } catch (Exception $e) {
+      $response = ["Error : $e", "message" => "Gagal mengambil data permohonan cuti"];
+      return response()->json($response, 500);
     }
   }
 }
