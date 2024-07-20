@@ -7,10 +7,14 @@ use App\Http\Controllers\MasterJabatanController;
 use App\Http\Controllers\PegawaiCurrentController;
 use App\Http\Controllers\PegawaiCurrentPositionController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\RekapController;
 use App\Models\PegawaiCurrent;
 use App\Models\PegawaiCurrentPosition;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +32,10 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('auth:
 Route::post('/login', [AuthController::class, 'login']);
 Route::put('/new-kd-password', [AuthController::class, 'newKdPass'])->middleware('auth:sanctum');
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/users/export-xls', [AuthController::class, 'export']);
+Route::get('/presensi/export-xls', [PresensiController::class, 'export']);
+Route::get('/cuti/export-xls', [CutiController::class, 'export']);
+Route::get('/rekap/export-xls', [RekapController::class, 'export']);
 
 // User routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -35,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/user', function (Request $request) {
     return $request->user();
   });
+  
 
   // Other authenticated routes
   Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent']);
@@ -46,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/presensi/export_excel', [PresensiController::class, 'export_excel']);
   Route::post('/request-cuti', [CutiController::class, 'requestCuti']);
   Route::post('/update-cuti', [CutiController::class, 'approvalCuti']);
-  Route::get('/get-list-permohonan-cuti', [CutiController::class, 'getListPermohonanCuti']);
+  Route::post('/get-list-permohonan-cuti', [CutiController::class, 'getListPermohonanCuti']);
 });
 
 // Other non-authenticated routes

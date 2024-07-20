@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CutiExport;
 use App\Models\Cuti;
 use App\Models\JenisCuti;
 use App\Models\MasterStatusPermohonanCuti;
@@ -11,10 +12,11 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 // todo:
-// 1. create get list apporal cuti, binding ke user login
-// 2. create approval/reject cuti
+// 1. create get list apporoval cuti, binding ke user login done
+// 2. create approval/reject cuti approval done, reject wip
 // 3. create detail cuti
 
 class CutiController extends Controller
@@ -123,34 +125,52 @@ class CutiController extends Controller
     $validated = $request->validate([
       'kd_akses_approver' => 'required',
       'kd_akses_pemohon' => 'required',
-      'id_permohonan' => 'integer|required',
-      'kd_status_permohonan' => 'integer|required'
+      'id_permohonan' => 'required|integer',
+      'status_persetujuan' => 'required|bool'
     ]);
-    // declare v_variable dari validated array
+
+    $now = Carbon::now()->format('Y-m-d');
+    // declare variable dari validated array
     foreach ($validated as $key => $val) {
-      $key = strtolower("v_" . $key);
+      $key = strtolower($key);
       $$key = $val;
     }
-    $now = Carbon::now()->format('Y-m-d');
-    $nama_atasan_1 = PegawaiCurrent::where('kd_akses', $v_kd_akses_approver)->select('nama')->pluck('nama')->first();
+    // 1	Permohonan Disetujui
+    // 2	Menunggu Persetujuan Sekretaris
+    // 3	Menunggu Persetujuan Kepala Desa
+    // 4	Permohonan Ditolak
+    // 5	Permohonan Dibatalkan
+
+    $curr_kd_status_permohonan = Cuti::where('id', $id_permohonan)->first()->kd_status_permohonan;
+    $jabatan_approver = PegawaiCurrent::where('kd_akses', $kd_akses_approver)->select('kd_jabatan', 'nama')->first();
+    $jabatan_pemohon = PegawaiCurrent::where('kd_akses', $kd_akses_pemohon)->select('kd_jabatan')->first();
+    $nama_atasan = PegawaiCurrent::where('kd_akses', $kd_akses_approver)->select('nama')->first();
+
+    if ($jabatan_pemohon !== "001" || $jabatan_pemohon !== "002") {
+      if ($status_persetujuan == true) {
+        if ($curr_kd_status_permohonan == 2) {
+          $next_kd_status_permohonan = 3;
+          $updateCuti = ['nama_atasan_1' => $nama_atasan];
+        } else if ($curr_kd_status_permohonan == 3) {
+          $next_kd_status_permohonan = 1;
+          $updateCuti = ['nama_atasan_2' => $nama_atasan];
+        }
+      } else {
+        $next_kd_status_permohonan = 4;
+      }
+    } else {
+      $next_kd_status_permohonan = $status_persetujuan == true ? 1 : 4;
+    }
 
     try {
       $updateCuti = [
-        'kd_status_permohonan' => $v_kd_status_permohonan,
+        'kd_status_permohonan' => $next_kd_status_permohonan
       ];
 
-      if ($v_kd_status_permohonan === 2) { // persetujuan sekretaris
-        $updateCuti['tanggal_approve_atasan_1'] = $now;
-        $updateCuti['nama_atasan_1'] = $nama_atasan_1;
-        $updateCuti['kd_akses_atasan_1'] = $v_kd_akses_approver;
-      } else if ($v_kd_status_permohonan === 1) { // persetujuan kepala desa
-        $updateCuti['tanggal_approve_atasan_2'] = $now;
-        $updateCuti['nama_atasan_2'] = $nama_atasan_2;
-        $updateCuti['kd_akses_atasan_2'] = $v_kd_akses_approver;
-      }
+
 
       DB::beginTransaction();
-      Cuti::where('id', $v_id_permohonan)->update($updateCuti);
+      Cuti::where('id', $id_permohonan)->update($updateCuti);
 
       DB::commit();
       $response = ["status" => "Success", "message" => "Berhasil memperbarui status permohonan."];
@@ -172,7 +192,7 @@ class CutiController extends Controller
 
     // Cek jabatan user
     $jabatan = DB::table('pegawai_currents')->where('kd_akses', $validated['kd_akses'])->value('kd_jabatan');
-    
+
     if ($jabatan == "001") { // Kepala Desa
       $kd_status_permohonan = 3;
     } else if ($jabatan == "002") { // Sekretaris
@@ -181,13 +201,38 @@ class CutiController extends Controller
       return response()->json("Anda tidak memiliki hak akses approval!", 422);
     }
 
+    // $kd_status_permohonan = 2;
+
     try {
-      $query = DB::table('cutis')->where('kd_status_permohonan', $kd_status_permohonan)->select('kd_akses', 'nama', 'alasan_cuti', 'kd_jabatan', 'kd_jenis_cuti', 'lama_cuti', 'tanggal_mulai', 'tanggal_selesai')->get();
-      $response = ["Status" => "Success", "message" => "Berhasil mengambil data permohonan cuti", "data" => $query];
+      $query = DB::select("SELECT
+      a.id, a.kd_akses, a.nama, a.alasan_cuti, b.nm_jabatan, c.nm_jenis_cuti, a.lama_cuti, a.tanggal_mulai, a.tanggal_selesai, a.created_at AS tanggal_pengajuan
+      FROM cutis a
+      LEFT JOIN master_jabatans b ON a.kd_jabatan = b.kd_jabatan
+      LEFT JOIN jenis_cutis c ON a.kd_jenis_cuti = c.kd_jenis_cuti
+      WHERE kd_status_permohonan = $kd_status_permohonan
+      ORDER BY tanggal_pengajuan ASC");
+
+
+      $response = [
+        "Status" => "Success", "message" => "Berhasil mengambil data permohonan cuti",
+        "total" => count($query),
+        "data" => $query
+      ];
       return response()->json($response, 200);
     } catch (Exception $e) {
       $response = ["Error : $e", "message" => "Gagal mengambil data permohonan cuti"];
       return response()->json($response, 500);
     }
+  }
+
+  public function export(Request $request)
+  {
+    $validated = $request->validate([
+      'tanggal_cuti' => 'date'
+    ]);
+
+    $tanggal_cuti = Carbon::parse($validated['tanggal_cuti'])->format('Y-m');
+    $filename = "log_cuti_" . Carbon::now()->format("Y-m-d") . ".xlsx";
+    return Excel::download(new CutiExport($tanggal_cuti), $filename);
   }
 }

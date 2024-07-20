@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\PresensisExport;
 use App\Models\Presensi;
+use App\Exports\PresensiExport;
 use Carbon\Carbon;
-use DateTime;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -129,7 +127,11 @@ class PresensiController extends Controller
 
   public function last5Days(Request $request)
   {
-    $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan from presensis where kd_akses = '$request->kd_akses' order by tanggal_presensi desc limit 5");
+    $validated = $request->validate([
+      "kd_akses" => "required",
+    ]);
+
+    $q_check = DB::select("select tanggal_presensi, jam_masuk, jam_keluar, alasan, latitude_masuk, longitude_masuk, latitude_keluar, longitude_keluar, status_lokasi_masuk, status_lokasi_keluar from presensis where kd_akses = '" . $validated['kd_akses'] . "' order by tanggal_presensi desc limit 5");
 
     $response = ["message" => "Berhasil", "data" => $q_check];
     return response()->json($response, 200);
@@ -158,23 +160,21 @@ class PresensiController extends Controller
     }
   }
 
-  public function export_excel(Request $request)
+  public function export(Request $request)
   {
     $validated = $request->validate([
-      "kd_akses" => "required",
+      'tanggal_presensi' => 'date'
     ]);
-    // return Excel::store(new PresensisExport, 'riwayat_presensi.xlsx', 'public',  \Maatwebsite\Excel\Excel::XLSX);
-    try {
-      $now = Carbon::now()->format("Y_m_d_H_i_s");
-      $filename = str_replace(" ", "_", "q_".$now.".xlsx");
-      Presensi::query()->where('kd_akses', $validated['kd_akses'])->storeExcel($filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
-      $response = ["message" => "Berhasil generate excel", "link" => "link", "filename" => $filename];
-      return response()->json($response, 200);
-    } catch (\Throwable $th) {
-      $response = ["message" => "Gagal generate excel", "error" => $th];
-      return response()->json($response, 500);
-    }
 
+    $tanggal_presensi = Carbon::parse($validated['tanggal_presensi'])->format('Y-m');
+    Carbon::setLocale('id');
+
+    $currentDate = Carbon::now();
+    $month = $currentDate->translatedFormat('F');
+    $year = $currentDate->format('Y');
+
+    $filename = "log_presensi_{$month}_{$year}.xlsx";
+
+    return Excel::download(new PresensiExport($tanggal_presensi), $filename);
   }
-
 }
