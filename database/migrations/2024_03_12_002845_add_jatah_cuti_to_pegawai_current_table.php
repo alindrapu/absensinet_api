@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pegawai_currents', function (Blueprint $table) {
-            $table->integer('jatah_cuti_tahunan');
-            $table->integer('jatah_cuti_kematian');
-            $table->integer('jatah_cuti_menikah');
-            $table->integer('jatah_cuti_melahirkan');
+            $table->integer('jatah_cuti_tahunan')->default(12);
+            $table->integer('jatah_cuti_kematian')->default(3);
+            $table->integer('jatah_cuti_menikah')->default(3);
+            $table->integer('jatah_cuti_melahirkan')->default(3);
         });
     }
 

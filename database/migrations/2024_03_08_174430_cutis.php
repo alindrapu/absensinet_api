@@ -24,6 +24,8 @@ return new class extends Migration
       $table->integer('kd_status_permohonan'); // from master_status_permohonan_cutis
       $table->date('tanggal_approve_atasan_1')->nullable();
       $table->date('tanggal_approve_atasan_2')->nullable();
+      $table->date('tanggal_ubah')->nullable();
+      $table->date('tanggal_buat')->nullable();
       $table->string('alasan_pembatalan')->nullable();
       $table->string('alasan_penolakan')->nullable();
 
