@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/user', function (Request $request) {
     return $request->user();
   });
-  
+
 
   // Other authenticated routes
   Route::post('/add-pegawai-current', [PegawaiCurrentController::class, 'addPegawaiCurrent']);
@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/request-cuti', [CutiController::class, 'requestCuti']);
   Route::post('/update-cuti', [CutiController::class, 'approvalCuti']);
   Route::post('/get-list-permohonan-cuti', [CutiController::class, 'getListPermohonanCuti']);
+  Route::put('/update-password', [AuthController::class, 'updatePassword']);
 });
 
 // Other non-authenticated routes

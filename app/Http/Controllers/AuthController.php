@@ -177,6 +177,39 @@ class AuthController extends Controller
     }
   }
 
+  public function updatePassword(Request $request)
+  {
+    $response = [];
+    $user = User::where('kd_akses', $request->kd_akses)->first();
+    if (Hash::check($request->old_pass, $user->password)) {
+      try {
+        $update = User::where('kd_akses', $request->kd_akses)
+          ->update([
+            'password' => bcrypt($request->new_pass),
+          ]);
+  
+        if ($update) {
+          $user = User::where('kd_akses', $request->kd_akses)->first();
+          $user->save();
+  
+          $response = [
+            'status' => 'Berhasil',
+            'message' => 'Password berhasil diubah',
+          ];
+        }
+  
+        return response()->json($response, 200);
+      } catch (\Throwable $th) {
+        $response = [
+          'status' => 'Terjadi Kesalahan',
+          'message' => 'Password gagal diubah',
+          'error' => $th->getMessage()
+        ];
+        return response()->json($response, 400);
+      }
+    }
+  }
+
   public function logout(Request $request)
   {
     $request->user()->currentAccessToken()->delete();
