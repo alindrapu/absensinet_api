@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/update-cuti', [CutiController::class, 'approvalCuti']);
   Route::post('/get-list-permohonan-cuti', [CutiController::class, 'getListPermohonanCuti']);
   Route::put('/update-password', [AuthController::class, 'updatePassword']);
+  Route::post('/check-password', [AuthController::class, 'checkPassword']);
 });
 
 // Other non-authenticated routes

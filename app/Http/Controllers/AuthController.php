@@ -218,6 +218,23 @@ class AuthController extends Controller
     return response($response, 200);
   }
 
+  public function checkPassword(Request $request) {
+    $response = [];
+    $user = User::where('kd_akses', $request->kd_akses)->first();
+    if(Hash::check($request->password, $user->password)){
+      $response = [
+        'isValid' => true
+      ];
+      return response()->json($response, 200);
+    } else {
+      $response = [
+        'isValid' => false,
+      ];
+      return response()->json($response, 422);
+    }
+
+  }
+
   public function export()
   {
     return Excel::download(new UsersExport, 'users.xlsx');
